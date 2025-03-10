@@ -1,39 +1,35 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { useRouter, useRootNavigationState, Stack } from 'expo-router';
+import { TamaguiProvider, createTamagui } from 'tamagui';
+import { StatusBar } from 'expo-status-bar';
+import { ToastProvider } from '@tamagui/toast';
+import { defaultConfig } from '@tamagui/config/v4';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const tamaguiConfig = createTamagui({
+  ...defaultConfig,
+  fontLanguages: {},
+});
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+export default function Layout() {
+  const router = useRouter();
+  const navigationState = useRootNavigationState(); // ✅ 라우트 상태 확인
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    if (navigationState?.key) {
+      // ✅ 네비게이션 시스템이 로드된 후 이동
+      router.replace('/tamagui_main');
     }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
+  }, [navigationState?.key]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <TamaguiProvider config={tamaguiConfig}>
+      <ToastProvider>
+        {/* ✅ 반드시 Stack을 렌더링해야 오류가 발생하지 않음 */}
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+        </Stack>
+        <StatusBar style="auto" />
+      </ToastProvider>
+    </TamaguiProvider>
   );
 }
