@@ -7,16 +7,15 @@ import { defaultConfig } from '@tamagui/config/v4';
 
 const tamaguiConfig = createTamagui({
   ...defaultConfig,
-  fontLanguages: {},
 });
 
 export default function Layout() {
   const router = useRouter();
-  const navigationState = useRootNavigationState(); // ✅ 라우트 상태 확인
+  const navigationState = useRootNavigationState(); // 라우트 상태 확인 
 
   useEffect(() => {
     if (navigationState?.key) {
-      // ✅ 네비게이션 시스템이 로드된 후 이동
+      // 네비게이션 시스템이 랜더링 된 후 이동학도록 설정
       router.replace('/tamagui_main');
     }
   }, [navigationState?.key]);
@@ -24,7 +23,6 @@ export default function Layout() {
   return (
     <TamaguiProvider config={tamaguiConfig}>
       <ToastProvider>
-        {/* ✅ 반드시 Stack을 렌더링해야 오류가 발생하지 않음 */}
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
         </Stack>
